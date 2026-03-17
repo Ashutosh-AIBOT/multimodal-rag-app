@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+ENV/
+fastapi-env/
+conda-env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+*.log
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Data
+data/
+*.db
+*.sqlite3
+chroma_db/
+uploads/
+extracted/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hugging Face
+.huggingface/
+.token
