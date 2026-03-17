@@ -11,8 +11,9 @@ Gemini handles final answer synthesis.
 
 from __future__ import annotations
 import traceback
-from typing import TypedDict, Optional, Annotated
 import operator
+from typing import TypedDict, Optional, Annotated, Any
+from langgraph.graph.message import add_messages
 
 
 # ── State definition ─────────────────────────────────────────────────────────
@@ -52,27 +53,27 @@ def _default_state(
     max_books: int = 10,
     max_repos: int = 20,
 ) -> ResearchState:
-    return ResearchState(
-        query=query,
-        topic=query,
-        priority_channel=priority_channel or None,
-        priority_repo_url=priority_repo_url or None,
-        priority_paper_url=priority_paper_url or None,
-        max_papers=max_papers,
-        max_books=max_books,
-        max_repos=max_repos,
-        papers=[],
-        books=[],
-        repos=[],
-        websites=[],
-        videos=[],
-        summary="",
-        error="",
-        groq_api_key=groq_api_key,
-        gemini_api_key=gemini_api_key,
-        github_token=github_token,
-        youtube_api_key=youtube_api_key,
-    )
+    return {
+        "query": query,
+        "topic": query,
+        "priority_channel": priority_channel or None,
+        "priority_repo_url": priority_repo_url or None,
+        "priority_paper_url": priority_paper_url or None,
+        "max_papers": max_papers,
+        "max_books": max_books,
+        "max_repos": max_repos,
+        "papers": [],
+        "books": [],
+        "repos": [],
+        "websites": [],
+        "videos": [],
+        "summary": "",
+        "error": "",
+        "groq_api_key": groq_api_key,
+        "gemini_api_key": gemini_api_key,
+        "github_token": github_token,
+        "youtube_api_key": youtube_api_key,
+    }
 
 
 # ── Node functions ────────────────────────────────────────────────────────────
@@ -255,11 +256,9 @@ def build_research_graph():
         builder.add_edge("refine_query", "search_repos")
         builder.add_edge("refine_query", "search_websites")
         builder.add_edge("refine_query", "search_videos")
-        builder.add_edge("search_papers", "generate_summary")
-        builder.add_edge("search_books", "generate_summary")
-        builder.add_edge("search_repos", "generate_summary")
-        builder.add_edge("search_websites", "generate_summary")
-        builder.add_edge("search_videos", "generate_summary")
+        
+        # Use parallel execution
+        builder.add_edge(["search_papers", "search_books", "search_repos", "search_websites", "search_videos"], "generate_summary")
         builder.add_edge("generate_summary", END)
 
         return builder.compile()

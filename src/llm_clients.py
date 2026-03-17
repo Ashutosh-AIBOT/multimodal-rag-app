@@ -24,6 +24,7 @@ def get_groq_llm(api_key: str, model: str = "llama3-70b-8192"):
             model_name=model,
             temperature=0.1,
             max_tokens=2048,
+            # Removed proxies parameter that was causing the error
         )
     except Exception as e:
         print(f"[llm_clients] Groq init failed: {e}")
